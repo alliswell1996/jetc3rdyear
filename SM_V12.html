@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5">
+  <title>Johnson Electric Training Centre • Complete System</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', sans-serif;
+    }
+    body {
+      background: #f0f4f9;
+      padding: 20px;
+    }
+    .app-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      border-radius: 28px;
+      padding: 20px 28px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: white;
+    }
+    .college-sub {
+      color: #cbd5e1;
+      font-size: 0.8rem;
+    }
+    .stats-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+    }
+    .btn-clear,
+    .btn-excel {
+      background: #dc2626;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      color: white;
+    }
+    .btn-excel {
+      background: #1e7e34;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+      background: white;
+      padding: 8px 20px;
+      border-radius: 60px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 40px;
+      cursor: pointer;
+      color: #2c3e66;
+      transition: 0.2s;
+    }
+    .tab-btn:hover {
+      background: #e2e8f0;
+    }
+    .tab-btn.active {
+      background: #1e4663;
+      color: white;
+    }
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #eef2f7;
+      padding-bottom: 12px;
+      gap: 12px;
+    }
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1f2b48;
+    }
+    h3 {
+      font-size: 1.1rem;
+      margin: 15px 0 10px 0;
+      color: #2c3e66;
+    }
+    button {
+      background: #1e4663;
+      border: none;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+    button.outline {
+      background: transparent;
+      border: 1px solid #1e4663;
+      color: #1e4663;
+    }
+    button.danger {
+      background: #b91c1c;
+    }
+    button.small {
+      padding: 4px 12px;
+      font-size: 0.75rem;
+    }
+    button.warning {
+      background: #f59e0b;
+    }
+    button.success {
+      background: #10b981;
+    }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-end;
+    }
+    .input-group {
+      flex: 1;
+      min-width: 150px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #2c3e66;
+    }
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.85rem;
+    }
+    .scroll-table {
+      overflow-x: auto;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th,
+    td {
+      text-align: left;
+      padding: 12px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1e3a5f;
+      position: sticky;
+      top: 0;
+    }
+    .topic-chip {
+      background: #e0e7ff;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      margin: 2px;
+      display: inline-block;
+    }
+    .student-photo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e2e8f0;
+    }
+    .absent-badge {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+    .present-badge {
+      background: #d1fae5;
+      color: #059669;
+      padding: 4px 8px;
+      border-radius: 20px;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .view-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .view-toggle button.active {
+      background: #1e4663 !important;
+      color: white !important;
+    }
+    .percent-bar {
+      height: 8px;
+      border-radius: 10px;
+      background: #e2e8f0;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .percent-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .report-card {
+      background: #f9fafb;
+      border-radius: 20px;
+      padding: 16px 20px;
+      border-left: 4px solid #1e4663;
+    }
+    .report-card h4 {
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+    .leave-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .leave-item {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      border: 1px solid #e2e8f0;
+    }
+    .leave-item .dates {
+      font-weight: 600;
+      color: #1e4663;
+    }
+    .badge {
+      background: #dbeafe;
+      padding: 2px 10px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+    }
+    @media (max-width: 700px) {
+      .card {
+        padding: 16px;
+      }
+      .form-row {
+        flex-direction: column;
+      }
+      .report-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <div>
+        <h1>📚 Johnson Electric Training Centre</h1>
+        <div class="college-sub">Complete Classroom Management System</div>
+      </div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <div class="stats-badge" id="studentCountDisplay">👥 Students: 0</div>
+        <button id="clearAllStudentsBtn" class="btn-clear">🗑️ Remove All</button>
+        <button id="exportAllDataBtn" class="btn-excel">💾 Export Backup</button>
+        <input type="file" id="importBackupInput" accept=".json" style="display:none;">
+        <button id="importBackupBtn" class="outline">📂 Restore</button>
+        <button id="saveToFileBtn" class="success">💿 Save to JSON File</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="students">👩‍🎓 Students</button>
+      <button class="tab-btn" data-tab="subjects">📚 Subjects & Teachers</button>
+      <button class="tab-btn" data-tab="tests">📝 Tests & Topics</button>
+      <button class="tab-btn" data-tab="marks">✏️ Mark Entry</button>
+      <button class="tab-btn" data-tab="viewmarks">👁️ View Marks</button>
+      <button class="tab-btn" data-tab="mentor">🤝 Mentor Meetings</button>
+      <button class="tab-btn" data-tab="discipline">⚖️ Discipline</button>
+      <button class="tab-btn" data-tab="leave">🏖️ Leave Records</button>
+      <button class="tab-btn" data-tab="reports">📊 Reports</button>
+    </div>
+
+    <!-- Students Panel -->
+    <div id="studentsPanel" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><h2>📋 Student Database</h2><div style="display:flex; gap:8px;"><button id="excelUploadBtn" class="btn-excel">📎 Upload Excel</button><button id="addStudentBtn">+ Add Manual</button><button id="downloadExcelTemplate" class="outline">📥 Template</button></div></div>
+        <div id="excelUploadZone" style="display:none; padding:12px; background:#f1f5f9; border-radius:20px;"><p>📁 Click to upload Excel (.xlsx, .xls)</p><p><small>Columns: Reg No, Name, Year, Section, ParentMobile, StudentMobile, PhotoURL</small></p><input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;"></div>
+        <div id="studentForm" style="display:none;" class="form-row">
+          <div class="input-group"><label>Reg No</label><input id="regNo" placeholder="e.g., 2024001"></div>
+          <div class="input-group"><label>Name</label><input id="studentName" placeholder="Full Name"></div>
+          <div class="input-group"><label>Year</label><input id="year" placeholder="1st / 2nd / 3rd"></div>
+          <div class="input-group"><label>Section</label><input id="section" placeholder="A / B / C"></div>
+          <div class="input-group"><label>Parent Mobile</label><input id="parentMobile" placeholder="+91 XXXXXXXXXX"></div>
+          <div class="input-group"><label>Student Mobile</label><input id="studentMobile" placeholder="+91 XXXXXXXXXX"></div>
+          <div class="input-group"><label>Photo URL</label><input id="photoUrl" placeholder="Image URL"></div>
+          <div class="input-group"><button id="saveStudentBtn">Save</button><button id="cancelStudentBtn" class="outline small">Cancel</button></div>
+        </div>
+        <div class="scroll-table"><table><thead><tr><th>Photo</th><th>Reg No</th><th>Name</th><th>Year</th><th>Section</th><th>Parent Mobile</th><th>Student Mobile</th><th>Actions</th></tr></thead><tbody id="studentsTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Subjects Panel -->
+    <div id="subjectsPanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>📚 Subjects & Teachers</h2><button id="addSubjectBtn">+ Add Subject/Teacher</button></div>
+        <div id="subjectForm" style="display:none;" class="form-row">
+          <div class="input-group"><label>Subject Name</label><input id="subjectName"></div>
+          <div class="input-group"><label>Teacher Name</label><input id="teacherName"></div>
+          <div class="input-group"><label>Teacher Signature</label><input id="teacherSignature"></div>
+          <div class="input-group"><button id="saveSubjectBtn">Save</button><button id="cancelSubjectBtn" class="outline small">Cancel</button></div>
+        </div>
+        <div class="scroll-table"><table><thead><tr><th>Subject</th><th>Teacher</th><th>Signature</th><th>Actions</th></tr></thead><tbody id="subjectTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Tests Panel -->
+    <div id="testsPanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>📌 Tests & Topics</h2><button id="addTestDefBtn">+ New Test</button></div>
+        <div id="testDefForm" style="display:none;" class="form-row">
+          <div class="input-group"><label>Test Name</label><input id="testName"></div>
+          <div class="input-group"><label>Subject</label><select id="testSubjectSelect"></select></div>
+          <div class="input-group"><label>Max Marks</label><input id="maxMarks" type="number"></div>
+          <div class="input-group"><label>Topics (comma)</label><input id="topicsList"></div>
+          <div class="input-group"><button id="saveTestDefBtn">Save</button><button id="cancelTestDefBtn" class="outline small">Cancel</button></div>
+        </div>
+        <div class="scroll-table"><table><thead><tr><th>ID</th><th>Test Name</th><th>Subject</th><th>Max Marks</th><th>Topics</th><th>Actions</th></tr></thead><tbody id="testDefList"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Mark Entry Panel -->
+    <div id="marksPanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>🎯 Mark Entry</h2><div style="display:flex; gap:10px;"><div class="input-group" style="min-width:200px;"><label>Select Test</label><select id="markTestSelect"></select></div><button id="downloadMarksExcelBtn" class="btn-excel">📊 Download Excel</button><button id="downloadMarksPdfBtn" class="outline">📄 Download PDF</button></div></div>
+        <div class="scroll-table"><table><thead><tr><th>Reg No</th><th>Student</th><th>Status/Marks</th><th>Save</th></tr></thead><tbody id="marksEntryTbody"></tbody></table></div>
+        <div style="margin-top:12px;"><button id="bulkSaveMarksBtn" class="outline">💾 Save All Marks</button></div>
+      </div>
+    </div>
+
+    <!-- VIEW MARKS PANEL -->
+    <div id="viewmarksPanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>👁️ View Marks & Analytics</h2><button id="downloadViewMarksExcel" class="btn-excel">📥 Export View</button></div>
+        <div class="view-toggle"><button id="viewByTestBtn" class="active" style="background:#1e4663; color:white;">📝 Test-wise Analysis</button><button id="viewBySubjectBtn" class="outline">📚 Subject-wise Summary</button></div>
+        <div id="viewMarksContainer" class="scroll-table" style="max-height:600px;"></div>
+      </div>
+    </div>
+
+    <!-- Mentor Meetings Panel -->
+    <div id="mentorPanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>🤝 Mentor Meetings</h2><button id="addMentorBtn">+ Record Meeting</button></div>
+        <div id="mentorForm" style="display:none;" class="form-row">
+          <div class="input-group"><label>Reg No</label><input id="mentorRegNo" list="studentList"></div>
+          <div class="input-group"><label>Date</label><input id="mentorDate" type="date"></div>
+          <div class="input-group"><label>Teacher/Mentor</label><input id="mentorTeacher"></div>
+          <div class="input-group"><label>Discussion MoM</label><textarea id="mentorMom" rows="2"></textarea></div>
+          <div class="input-group"><label>Action Points</label><textarea id="mentorAction" rows="2"></textarea></div>
+          <div class="input-group"><button id="saveMentorBtn">Save</button><button id="cancelMentorBtn" class="outline small">Cancel</button></div>
+        </div>
+        <div class="scroll-table"><table><thead><tr><th>Reg No</th><th>Student</th><th>Date</th><th>Teacher</th><th>Discussion (MoM)</th><th>Action Points</th><th>Actions</th></tr></thead><tbody id="mentorTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Discipline Panel -->
+    <div id="disciplinePanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>⚖️ Discipline Records</h2><button id="addDiscBtn">+ Record Incident</button></div>
+        <div id="discForm" style="display:none;" class="form-row">
+          <div class="input-group"><label>Reg No</label><input id="discRegNo" list="studentList"></div>
+          <div class="input-group"><label>Date</label><input id="discDate" type="date"></div>
+          <div class="input-group"><label>Type</label><select id="discType"><option>Warning</option><option>Minor Offence</option><option>Major Offence</option><option>Positive Remark</option></select></div>
+          <div class="input-group"><label>Incident Details</label><textarea id="incidentDetails" rows="2"></textarea></div>
+          <div class="input-group"><label>Action Taken</label><textarea id="actionTaken" rows="2"></textarea></div>
+          <div class="input-group"><button id="saveDiscBtn">Save</button><button id="cancelDiscBtn" class="outline small">Cancel</button></div>
+        </div>
+        <div class="scroll-table"><table><thead><tr><th>Reg No</th><th>Student</th><th>Date</th><th>Type</th><th>Incident</th><th>Action Taken</th><th>Actions</th></tr></thead><tbody id="disciplineTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Leave Panel -->
+    <div id="leavePanel" class="tab-panel" style="display:none;">
+      <div class="card"><div class="card-header"><h2>🏖️ Leave Management</h2><button id="addLeaveBtn">+ Record Leave</button></div>
+        <div id="leaveForm" style="display:none;" class="form-row">
+          <div class="input-group"><label>Reg No</label><input id="leaveRegNo" list="studentList"></div>
+          <div class="input-group"><label>From Date</label><input id="leaveFrom" type="date"></div>
+          <div class="input-group"><label>To Date</label><input id="leaveTo" type="date"></div>
+          <div class="input-group"><label>Day(s)</label><input id="leaveDay" readonly></div>
+          <div class="input-group"><label>Reason</label><textarea id="leaveReason" rows="2"></textarea></div>
+          <div class="input-group"><label>Spoken By</label><input id="leaveSpokenBy"></div>
+          <div class="input-group"><button id="saveLeaveBtn">Save</button><button id="cancelLeaveBtn" class="outline small">Cancel</button></div>
+        </div>
+        <div class="scroll-table"><table><thead><tr><th>Reg No</th><th>Student</th><th>From</th><th>To</th><th>Days</th><th>Day(s)</th><th>Reason</th><th>Spoken By</th><th>Actions</th></tr></thead><tbody id="leaveTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- REPORTS PANEL - enhanced with leave records -->
+    <div id="reportsPanel" class="tab-panel" style="display:none;">
+      <div class="card">
+        <div class="card-header"><h2>📊 Comprehensive Student Report</h2>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="printIndividualReportBtn" class="btn-excel">🖨️ Print Report</button>
+            <button id="downloadPeriodReportBtn" class="success">📅 Download Period Report</button>
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:12px;">
+          <div class="input-group"><label>Select Student</label><select id="individualStudentSelect"></select></div>
+          <div class="input-group"><label>Subject Filter</label><select id="reportSubjectSelect"><option value="">-- All Subjects --</option></select></div>
+          <div class="input-group"><label>Period From</label><input type="date" id="periodFrom"></div>
+          <div class="input-group"><label>Period To</label><input type="date" id="periodTo"></div>
+          <div class="input-group" style="display:flex; align-items:flex-end;"><button id="refreshReportsBtn" class="outline">Apply Filter</button></div>
+        </div>
+        <div id="individualReportContainer" style="background:#f9fafb; padding:20px; border-radius:20px;"></div>
+      </div>
+    </div>
+    <datalist id="studentList"></datalist>
+  </div>
+
+  <script>
+    (function() {
+      let db = { students: [], testDefinitions: [], marks: [], mentorMeetings: [], discipline: [], leaves: [], subjects: [] };
+
+      function saveToStorage() { localStorage.setItem("johnson_classroom_db_v5", JSON.stringify(db)); }
+
+      function getStudent(regNo) { return db.students.find(s => s.regNo === regNo); }
+
+      function getDayName(d) { if (!d) return ''; return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date(d).getDay()]; }
+
+      function calcDays(f, t) { const s = new Date(f), e = new Date(t); if (isNaN(s) || isNaN(e)) return 0; return Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1; }
+
+      function loadFromStorage() {
+        const saved = localStorage.getItem("johnson_classroom_db_v5");
+        if (saved) { try { const p = JSON.parse(saved); db = { ...db, ...p }; } catch (e) {} }
+        if (!db.mentorMeetings) db.mentorMeetings = [];
+        if (!db.subjects) db.subjects = [];
+        if (db.students.length === 0) {
+          for (let i = 1; i <= 20; i++) db.students.push({ regNo: `REG${1000+i}`, name: `Student ${i}`, year: i <= 10 ? "1st Year" : (i <= 15 ? "2nd Year" : "3rd Year"), section: i % 2 ? "A" : "B", parentMobile: `+91 98xxx${1000+i}`, studentMobile: `+91 97xxx${2000+i}`, photoUrl: "" });
+          db.subjects.push({ id: "sub1", subjectName: "Mathematics", teacherName: "Mr. Sharma", signature: "M.S" });
+          db.subjects.push({ id: "sub2", subjectName: "Science", teacherName: "Ms. Priya", signature: "P.K" });
+          db.testDefinitions.push({ id: "t1", testName: "Unit Test 1", subject: "Mathematics", maxMarks: 50, topics: ["Algebra","Geometry"], date: "2024-01-15" });
+          db.testDefinitions.push({ id: "t2", testName: "Mid Semester", subject: "Science", maxMarks: 80, topics: ["Physics","Chemistry"], date: "2024-02-10" });
+          db.students.slice(0, 12).forEach(s => {
+            db.marks.push({ testId: "t1", regNo: s.regNo, marksObtained: Math.floor(Math.random() * 45 + 5), status: "Present" });
+            db.marks.push({ testId: "t2", regNo: s.regNo, marksObtained: Math.floor(Math.random() * 70 + 10), status: "Present" });
+          });
+          db.discipline.push({ regNo: "REG1001", date: "2024-01-20", type: "Warning", incidentDetails: "Late submission", actionTaken: "Counseled" });
+          db.leaves.push({ regNo: "REG1002", fromDate: "2024-02-01", toDate: "2024-02-03", reason: "Medical", spokenBy: "Mother" });
+          db.leaves.push({ regNo: "REG1005", fromDate: "2024-03-10", toDate: "2024-03-12", reason: "Family event", spokenBy: "Father" });
+          db.leaves.push({ regNo: "REG1008", fromDate: "2024-04-05", toDate: "2024-04-07", reason: "Vacation", spokenBy: "Self" });
+        }
+        saveToStorage();
+        renderAll();
+      }
+
+      function renderAll() { renderStudents(); renderSubjects(); renderTests(); renderMarkSelector(); renderMentor(); renderDiscipline(); renderLeaves(); updateCount(); populateSelects(); renderViewMarks(); updateDatalist(); }
+
+      function renderStudents() {
+        const tbody = document.getElementById("studentsTbody");
+        tbody.innerHTML = "";
+        db.students.forEach((s, idx) => {
+          const row = tbody.insertRow();
+          row.innerHTML = `<td><img class="student-photo" src="${s.photoUrl && s.photoUrl.startsWith('http') ? s.photoUrl : 'https://ui-avatars.com/api/?background=1e4663&color=fff&name=' + encodeURIComponent(s.name)}" onerror="this.src='https://ui-avatars.com/api/?background=gray&name=U'"></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="students" data-idx="${idx}" data-field="regNo">${s.regNo}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="students" data-idx="${idx}" data-field="name">${s.name}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="students" data-idx="${idx}" data-field="year">${s.year}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="students" data-idx="${idx}" data-field="section">${s.section}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="students" data-idx="${idx}" data-field="parentMobile">${s.parentMobile || "-"}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="students" data-idx="${idx}" data-field="studentMobile">${s.studentMobile || "-"}</span></td>
+            <td class="action-buttons"><button class="small warning" data-action="editStudent" data-idx="${idx}">Edit</button><button class="small danger" data-action="deleteStudent" data-idx="${idx}">Del</button></td>`;
+        });
+      }
+
+      function renderSubjects() {
+        const tbody = document.getElementById("subjectTbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        db.subjects.forEach((s, idx) => {
+          const row = tbody.insertRow();
+          row.innerHTML = `<td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="subjects" data-idx="${idx}" data-field="subjectName">${s.subjectName}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="subjects" data-idx="${idx}" data-field="teacherName">${s.teacherName}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="subjects" data-idx="${idx}" data-field="signature">${s.signature}</span></td>
+            <td class="action-buttons"><button class="small warning" data-action="editSubject" data-idx="${idx}">Edit</button><button class="small danger" data-action="deleteSubject" data-idx="${idx}">Del</button></td>`;
+        });
+        const sel = document.getElementById("testSubjectSelect");
+        if (sel) sel.innerHTML = '<option value="">--Select Subject--</option>' + db.subjects.map(s => `<option value="${s.subjectName}">${s.subjectName}</option>`).join('');
+      }
+
+      function renderTests() {
+        const tbody = document.getElementById("testDefList");
+        tbody.innerHTML = "";
+        db.testDefinitions.forEach((t, idx) => {
+          const row = tbody.insertRow();
+          row.innerHTML = `<td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="testDefinitions" data-idx="${idx}" data-field="id">${t.id}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="testDefinitions" data-idx="${idx}" data-field="testName">${t.testName}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="testDefinitions" data-idx="${idx}" data-field="subject">${t.subject}</span></td>
+            <td>${t.maxMarks}</td>
+            <td>${(t.topics || []).map(tp => `<span class="topic-chip">${tp}</span>`).join('') || '—'}</td>
+            <td class="action-buttons"><button class="small warning" data-action="editTest" data-idx="${idx}">Edit</button><button class="small danger" data-action="deleteTest" data-idx="${idx}">Del</button></td>`;
+        });
+      }
+
+      function renderMentor() {
+        const tbody = document.getElementById("mentorTbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        db.mentorMeetings.forEach((m, idx) => {
+          const s = getStudent(m.regNo);
+          const row = tbody.insertRow();
+          row.innerHTML = `<td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="mentorMeetings" data-idx="${idx}" data-field="regNo">${m.regNo}</span></td>
+            <td>${s?.name || "?"}</td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="mentorMeetings" data-idx="${idx}" data-field="date">${m.date}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="mentorMeetings" data-idx="${idx}" data-field="teacher">${m.teacher || "-"}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="mentorMeetings" data-idx="${idx}" data-field="mom">${m.mom || "-"}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="mentorMeetings" data-idx="${idx}" data-field="actionPoints">${m.actionPoints || "-"}</span></td>
+            <td class="action-buttons"><button class="small warning" data-action="editMentor" data-idx="${idx}">Edit</button><button class="small danger" data-action="deleteMentor" data-idx="${idx}">Del</button></td>`;
+        });
+      }
+
+      function renderDiscipline() {
+        const tbody = document.getElementById("disciplineTbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        db.discipline.forEach((d, idx) => {
+          const s = getStudent(d.regNo);
+          const row = tbody.insertRow();
+          row.innerHTML = `<td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="discipline" data-idx="${idx}" data-field="regNo">${d.regNo}</span></td>
+            <td>${s?.name || "?"}</td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="discipline" data-idx="${idx}" data-field="date">${d.date}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="discipline" data-idx="${idx}" data-field="type">${d.type}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="discipline" data-idx="${idx}" data-field="incidentDetails">${d.incidentDetails || "-"}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="discipline" data-idx="${idx}" data-field="actionTaken">${d.actionTaken || "-"}</span></td>
+            <td class="action-buttons"><button class="small warning" data-action="editDisc" data-idx="${idx}">Edit</button><button class="small danger" data-action="deleteDisc" data-idx="${idx}">Del</button></td>`;
+        });
+      }
+
+      function renderLeaves() {
+        const tbody = document.getElementById("leaveTbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        db.leaves.forEach((l, idx) => {
+          const s = getStudent(l.regNo);
+          const days = calcDays(l.fromDate, l.toDate);
+          const row = tbody.insertRow();
+          row.innerHTML = `<td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="leaves" data-idx="${idx}" data-field="regNo">${l.regNo}</span></td>
+            <td>${s?.name || "?"}</td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="leaves" data-idx="${idx}" data-field="fromDate">${l.fromDate}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="leaves" data-idx="${idx}" data-field="toDate">${l.toDate}</span></td>
+            <td>${days}</td>
+            <td>${getDayName(l.fromDate)}${days > 1 ? ' to ' + getDayName(l.toDate) : ''}</td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="leaves" data-idx="${idx}" data-field="reason">${l.reason || "-"}</span></td>
+            <td><span style="cursor:pointer;background:#fef3c7;padding:2px 6px;border-radius:8px;" data-action="edit" data-collection="leaves" data-idx="${idx}" data-field="spokenBy">${l.spokenBy || "-"}</span></td>
+            <td class="action-buttons"><button class="small warning" data-action="editLeave" data-idx="${idx}">Edit</button><button class="small danger" data-action="deleteLeave" data-idx="${idx}">Del</button></td>`;
+        });
+      }
+
+      document.addEventListener('click', function(e) {
+        const target = e.target;
+        const action = target.dataset.action;
+        const idx = parseInt(target.dataset.idx);
+        const collection = target.dataset.collection;
+        const field = target.dataset.field;
+
+        if (action === 'edit' && collection && !isNaN(idx) && field) {
+          let newVal = prompt(`Edit ${field}:`, db[collection][idx][field]);
+          if (newVal !== null) { db[collection][idx][field] = newVal; saveToStorage(); renderAll(); }
+          return;
+        }
+        if (action === 'editStudent') { editStudentForm(idx); return; }
+        if (action === 'deleteStudent') { deleteStudent(idx); return; }
+        if (action === 'editSubject') { editSubjectForm(idx); return; }
+        if (action === 'deleteSubject') { db.subjects.splice(idx, 1); saveToStorage(); renderAll(); return; }
+        if (action === 'editTest') { editTestForm(idx); return; }
+        if (action === 'deleteTest') { const t = db.testDefinitions[idx]; db.testDefinitions.splice(idx, 1); db.marks = db.marks.filter(m => m.testId !== t.id); saveToStorage(); renderAll(); return; }
+        if (action === 'editMentor') { editMentorForm(idx); return; }
+        if (action === 'deleteMentor') { db.mentorMeetings.splice(idx, 1); saveToStorage(); renderAll(); return; }
+        if (action === 'editDisc') { editDiscForm(idx); return; }
+        if (action === 'deleteDisc') { db.discipline.splice(idx, 1); saveToStorage(); renderAll(); return; }
+        if (action === 'editLeave') { editLeaveForm(idx); return; }
+        if (action === 'deleteLeave') { db.leaves.splice(idx, 1); saveToStorage(); renderAll(); return; }
+      });
+
+      function editStudentForm(idx) { const s = db.students[idx]; document.getElementById("regNo").value = s.regNo; document.getElementById("studentName").value = s.name; document.getElementById("year").value = s.year; document.getElementById("section").value = s.section; document.getElementById("parentMobile").value = s.parentMobile || ""; document.getElementById("studentMobile").value = s.studentMobile || ""; document.getElementById("photoUrl").value = s.photoUrl || ""; document.getElementById("studentForm").style.display = "flex"; document.getElementById("saveStudentBtn").onclick = () => { db.students[idx] = { regNo: document.getElementById("regNo").value.trim(), name: document.getElementById("studentName").value.trim(), year: document.getElementById("year").value.trim(), section: document.getElementById("section").value.trim(), parentMobile: document.getElementById("parentMobile").value.trim(), studentMobile: document.getElementById("studentMobile").value.trim(), photoUrl: document.getElementById("photoUrl").value.trim() }; saveToStorage(); renderAll(); document.getElementById("studentForm").style.display = "none"; }; }
+
+      function deleteStudent(idx) { const s = db.students[idx]; if (confirm(`Delete student ${s.name}?`)) { db.students.splice(idx, 1); db.marks = db.marks.filter(m => m.regNo !== s.regNo); db.discipline = db.discipline.filter(d => d.regNo !== s.regNo); db.leaves = db.leaves.filter(l => l.regNo !== s.regNo); db.mentorMeetings = db.mentorMeetings.filter(m => m.regNo !== s.regNo); saveToStorage(); renderAll(); } }
+
+      function editSubjectForm(idx) { const s = db.subjects[idx]; document.getElementById("subjectName").value = s.subjectName; document.getElementById("teacherName").value = s.teacherName; document.getElementById("teacherSignature").value = s.signature; document.getElementById("subjectForm").style.display = "flex"; document.getElementById("saveSubjectBtn").onclick = () => { db.subjects[idx] = { id: s.id, subjectName: document.getElementById("subjectName").value.trim(), teacherName: document.getElementById("teacherName").value.trim(), signature: document.getElementById("teacherSignature").value.trim() }; saveToStorage(); renderAll(); document.getElementById("subjectForm").style.display = "none"; }; }
+
+      function editTestForm(idx) { const t = db.testDefinitions[idx]; document.getElementById("testName").value = t.testName; document.getElementById("testSubjectSelect").value = t.subject; document.getElementById("maxMarks").value = t.maxMarks; document.getElementById("topicsList").value = (t.topics || []).join(', '); document.getElementById("testDefForm").style.display = "flex"; document.getElementById("saveTestDefBtn").onclick = () => { db.testDefinitions[idx] = { id: t.id, testName: document.getElementById("testName").value.trim(), subject: document.getElementById("testSubjectSelect").value, maxMarks: parseInt(document.getElementById("maxMarks").value), topics: document.getElementById("topicsList").value.split(',').map(x => x.trim()).filter(x => x) }; saveToStorage(); renderAll(); document.getElementById("testDefForm").style.display = "none"; }; }
+
+      function editMentorForm(idx) { const m = db.mentorMeetings[idx]; document.getElementById("mentorRegNo").value = m.regNo; document.getElementById("mentorDate").value = m.date; document.getElementById("mentorTeacher").value = m.teacher || ""; document.getElementById("mentorMom").value = m.mom || ""; document.getElementById("mentorAction").value = m.actionPoints || ""; document.getElementById("mentorForm").style.display = "flex"; document.getElementById("saveMentorBtn").onclick = () => { db.mentorMeetings[idx] = { regNo: document.getElementById("mentorRegNo").value.trim(), date: document.getElementById("mentorDate").value, teacher: document.getElementById("mentorTeacher").value, mom: document.getElementById("mentorMom").value, actionPoints: document.getElementById("mentorAction").value }; saveToStorage(); renderAll(); document.getElementById("mentorForm").style.display = "none"; }; }
+
+      function editDiscForm(idx) { const d = db.discipline[idx]; document.getElementById("discRegNo").value = d.regNo; document.getElementById("discDate").value = d.date; document.getElementById("discType").value = d.type; document.getElementById("incidentDetails").value = d.incidentDetails || ""; document.getElementById("actionTaken").value = d.actionTaken || ""; document.getElementById("discForm").style.display = "flex"; document.getElementById("saveDiscBtn").onclick = () => { db.discipline[idx] = { regNo: document.getElementById("discRegNo").value.trim(), date: document.getElementById("discDate").value, type: document.getElementById("discType").value, incidentDetails: document.getElementById("incidentDetails").value, actionTaken: document.getElementById("actionTaken").value }; saveToStorage(); renderAll(); document.getElementById("discForm").style.display = "none"; }; }
+
+      function editLeaveForm(idx) { const l = db.leaves[idx]; document.getElementById("leaveRegNo").value = l.regNo; document.getElementById("leaveFrom").value = l.fromDate; document.getElementById("leaveTo").value = l.toDate; document.getElementById("leaveReason").value = l.reason || ""; document.getElementById("leaveSpokenBy").value = l.spokenBy || ""; document.getElementById("leaveForm").style.display = "flex"; document.getElementById("saveLeaveBtn").onclick = () => { db.leaves[idx] = { regNo: document.getElementById("leaveRegNo").value.trim(), fromDate: document.getElementById("leaveFrom").value, toDate: document.getElementById("leaveTo").value, reason: document.getElementById("leaveReason").value, spokenBy: document.getElementById("leaveSpokenBy").value }; saveToStorage(); renderAll(); document.getElementById("leaveForm").style.display = "none"; }; }
+
+      function renderMarkSelector() {
+        const sel = document.getElementById("markTestSelect");
+        if (!sel) return;
+        sel.innerHTML = '<option value="">-- Choose Test --</option>' + db.testDefinitions.map(t => `<option value="${t.id}">${t.testName} (${t.subject})</option>`).join('');
+        sel.onchange = () => { if (sel.value) loadMarkEntry(sel.value); };
+        if (db.testDefinitions.length) sel.value = db.testDefinitions[0].id;
+        if (sel.value) loadMarkEntry(sel.value);
+      }
+
+      function loadMarkEntry(testId) {
+        const tbody = document.getElementById("marksEntryTbody");
+        tbody.innerHTML = "";
+        const test = db.testDefinitions.find(t => t.id === testId);
+        if (!test) return;
+        db.students.forEach(s => {
+          const existing = db.marks.find(m => m.testId === testId && m.regNo === s.regNo);
+          const row = tbody.insertRow();
+          row.innerHTML = `<td>${s.regNo}</td><td>${s.name}</td><td></td><td></td>`;
+          const cell = row.cells[2];
+          const wrap = document.createElement("div");
+          wrap.style.display = "flex";
+          wrap.style.gap = "8px";
+          const inp = document.createElement("input");
+          inp.type = "number";
+          inp.placeholder = `0-${test.maxMarks}`;
+          inp.value = existing?.marksObtained || "";
+          inp.style.width = "100px";
+          if (existing?.status === "Absent") inp.disabled = true;
+          wrap.appendChild(inp);
+          const absBtn = document.createElement("button");
+          absBtn.innerText = "Absent";
+          absBtn.className = "small danger";
+          absBtn.onclick = () => { inp.value = ""; inp.disabled = true; const idx = db.marks.findIndex(m => m.testId === testId && m.regNo === s.regNo); if (idx >= 0) db.marks[idx] = { testId, regNo: s.regNo, marksObtained: null, status: "Absent" }; else db.marks.push({ testId, regNo: s.regNo, marksObtained: null, status: "Absent" }); saveToStorage(); };
+          wrap.appendChild(absBtn);
+          const presBtn = document.createElement("button");
+          presBtn.innerText = "Present";
+          presBtn.className = "small success";
+          presBtn.onclick = () => { inp.disabled = false; const idx = db.marks.findIndex(m => m.testId === testId && m.regNo === s.regNo); if (idx >= 0 && db.marks[idx].status === "Absent") { db.marks[idx].status = "Present"; db.marks[idx].marksObtained = null; saveToStorage(); } inp.value = ""; };
+          wrap.appendChild(presBtn);
+          cell.appendChild(wrap);
+          const saveCell = row.cells[3];
+          const btn = document.createElement("button");
+          btn.innerText = "Save";
+          btn.className = "small";
+          btn.onclick = () => {
+            let val = parseFloat(inp.value);
+            if (isNaN(val)) val = null;
+            if (val !== null && (val < 0 || val > test.maxMarks)) alert(`Invalid marks!`);
+            else { const idx = db.marks.findIndex(m => m.testId === testId && m.regNo === s.regNo); if (idx >= 0) { db.marks[idx].marksObtained = val; db.marks[idx].status = val !== null ? "Present" : "Absent"; } else if (val !== null) db.marks.push({ testId, regNo: s.regNo, marksObtained: val, status: "Present" }); saveToStorage(); alert("Saved!"); }
+          };
+          saveCell.appendChild(btn);
+        });
+      }
+
+      function bulkSaveMarks() {
+        const testId = document.getElementById("markTestSelect").value;
+        if (!testId) return;
+        const test = db.testDefinitions.find(t => t.id === testId);
+        document.querySelectorAll("#marksEntryTbody tr").forEach(row => {
+          const regNo = row.cells[0].innerText;
+          const wrap = row.cells[2].querySelector("div");
+          const inp = wrap?.querySelector("input");
+          if (inp && !inp.disabled) {
+            let val = parseFloat(inp.value);
+            if (isNaN(val)) val = null;
+            if (val !== null && (val < 0 || val > test.maxMarks)) alert(`Invalid for ${regNo}`);
+            else { const idx = db.marks.findIndex(m => m.testId === testId && m.regNo === regNo); if (idx >= 0) { db.marks[idx].marksObtained = val; db.marks[idx].status = val !== null ? "Present" : "Absent"; } else if (val !== null) db.marks.push({ testId, regNo, marksObtained: val, status: "Present" }); }
+          }
+        });
+        saveToStorage();
+        alert("All marks saved!");
+        renderMarkSelector();
+      }
+
+      function updateCount() { document.getElementById("studentCountDisplay").innerHTML = `👥 Students: ${db.students.length}`; }
+
+      function populateSelects() {
+        const subjSel = document.getElementById("reportSubjectSelect");
+        if (subjSel) subjSel.innerHTML = '<option value="">-- All Subjects --</option>' + [...new Set(db.testDefinitions.map(t => t.subject))].map(s => `<option>${s}</option>`).join('');
+      }
+
+      function updateDatalist() {
+        document.getElementById("studentList").innerHTML = db.students.map(s => `<option value="${s.regNo}">`).join('');
+        const sel = document.getElementById("individualStudentSelect");
+        if (sel) sel.innerHTML = '<option value="">-- Select Student --</option>' + db.students.map(s => `<option value="${s.regNo}">${s.regNo} - ${s.name}</option>`).join('');
+      }
+
+      // VIEW MARKS
+      let currentViewMode = 'test';
+      function renderViewMarks() {
+        const container = document.getElementById("viewMarksContainer");
+        if (!container) return;
+        if (currentViewMode === 'test') renderTestWiseAnalysis(container);
+        else renderSubjectWiseSummary(container);
+      }
+
+      function getPercentage(mark, max) { if (!mark || mark.status === 'Absent' || !mark.marksObtained || !max) return null; return (mark.marksObtained / max) * 100; }
+
+      function renderTestWiseAnalysis(container) {
+        let html = '';
+        db.testDefinitions.forEach(test => {
+          const testMarks = db.marks.filter(m => m.testId === test.id);
+          const totalStudents = testMarks.length;
+          const presentStudents = testMarks.filter(m => m.status !== 'Absent' && m.marksObtained != null);
+          const absentCount = testMarks.filter(m => m.status === 'Absent').length;
+          const totalPresent = presentStudents.length;
+          let above80 = 0, range70to79 = 0, range60to69 = 0, range50to59 = 0, below50 = 0, failedCount = 0;
+          let sumPercent = 0;
+          presentStudents.forEach(m => { const pct = getPercentage(m, test.maxMarks); if (pct !== null) { sumPercent += pct; if (pct >= 80) above80++; else if (pct >= 70) range70to79++; else if (pct >= 60) range60to69++; else if (pct >= 50) range50to59++; else below50++; if (pct < 40) failedCount++; } });
+          const passCount = totalPresent - failedCount;
+          const passPercent = totalPresent > 0 ? ((passCount / totalPresent) * 100).toFixed(1) : '0';
+          const avgPercent = totalPresent > 0 ? (sumPercent / totalPresent).toFixed(1) : 'N/A';
+          html += `<div style="margin-bottom:30px; border:1px solid #e2e8f0; border-radius:20px; padding:20px; background:#fafcff;">
+            <h3 style="margin-top:0;">📝 ${test.testName} (${test.subject}) - Max Marks: ${test.maxMarks}</h3>
+            <p><strong>Total Students:</strong> ${totalStudents} | <strong>Present:</strong> ${totalPresent} | <strong>Absent:</strong> ${absentCount}</p>
+            <table style="width:100%;">
+              <thead><tr><th>Metric</th><th>Count</th><th>Percentage</th><th>Distribution</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Overall Pass %</strong></td><td>${passCount} / ${totalPresent}</td><td>${passPercent}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${passPercent}%; background:#10b981;"></div></div></td></tr>
+                <tr><td><strong>Average %</strong></td><td colspan="2">${avgPercent}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${avgPercent}%; background:#3b82f6;"></div></div></td></tr>
+                <tr><td>Above 80%</td><td>${above80}</td><td>${totalPresent>0?((above80/totalPresent)*100).toFixed(1):0}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${totalPresent>0?(above80/totalPresent)*100:0}%; background:#059669;"></div></div></td></tr>
+                <tr><td>70 - 79%</td><td>${range70to79}</td><td>${totalPresent>0?((range70to79/totalPresent)*100).toFixed(1):0}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${totalPresent>0?(range70to79/totalPresent)*100:0}%; background:#2563eb;"></div></div></td></tr>
+                <tr><td>60 - 69%</td><td>${range60to69}</td><td>${totalPresent>0?((range60to69/totalPresent)*100).toFixed(1):0}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${totalPresent>0?(range60to69/totalPresent)*100:0}%; background:#f59e0b;"></div></div></td></tr>
+                <tr><td>50 - 59%</td><td>${range50to59}</td><td>${totalPresent>0?((range50to59/totalPresent)*100).toFixed(1):0}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${totalPresent>0?(range50to59/totalPresent)*100:0}%; background:#f97316;"></div></div></td></tr>
+                <tr><td>Below 49%</td><td>${below50}</td><td>${totalPresent>0?((below50/totalPresent)*100).toFixed(1):0}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${totalPresent>0?(below50/totalPresent)*100:0}%; background:#ef4444;"></div></div></td></tr>
+                <tr style="background:#fee2e2;"><td><strong>Failed (< 40%)</strong></td><td>${failedCount}</td><td>${totalPresent>0?((failedCount/totalPresent)*100).toFixed(1):0}%</td><td><div class="percent-bar"><div class="percent-fill" style="width:${totalPresent>0?(failedCount/totalPresent)*100:0}%; background:#dc2626;"></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>`;
+        });
+        container.innerHTML = html || '<p>No test data available.</p>';
+      }
+
+      function renderSubjectWiseSummary(container) {
+        const subjectMap = new Map();
+        db.subjects.forEach(sub => subjectMap.set(sub.subjectName, []));
+        db.testDefinitions.forEach(test => { if (subjectMap.has(test.subject)) subjectMap.get(test.subject).push(test); });
+        let html = `<div style="overflow-x:auto;"><table style="min-width:100%;"><thead><tr><th>Student</th>`;
+        const allSubjects = [...subjectMap.keys()];
+        allSubjects.forEach(sub => { html += `<th colspan="2">${sub}</th>`; });
+        html += `</tr><tr><th></th>`;
+        allSubjects.forEach(sub => { const tests = subjectMap.get(sub) || []; tests.forEach(t => { html += `<th>${t.testName} (${t.maxMarks})</th>`; }); html += `<th>Avg%</th>`; });
+        html += `</tr></thead><tbody>`;
+        db.students.forEach(student => {
+          html += `<tr><td><strong>${student.name}</strong><br><small>${student.regNo}</small></td>`;
+          allSubjects.forEach(sub => {
+            const tests = subjectMap.get(sub) || [];
+            let totalPct = 0, count = 0;
+            tests.forEach(test => {
+              const mark = db.marks.find(m => m.testId === test.id && m.regNo === student.regNo);
+              const pct = getPercentage(mark, test.maxMarks);
+              if (mark && mark.status === 'Absent') { html += `<td style="color:#dc2626; font-weight:bold;">ABS</td>`; } else if (pct !== null) { html += `<td>${mark.marksObtained} (${pct.toFixed(1)}%)</td>`; totalPct += pct; count++; } else { html += `<td>-</td>`; }
+            });
+            const avg = count > 0 ? (totalPct / count).toFixed(1) : '-';
+            html += `<td style="font-weight:bold; background:#f0f9ff;">${avg}${avg!=='-'?'%':''}</td>`;
+          });
+          html += `</tr>`;
+        });
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
+      }
+
+      function downloadViewMarksExcel() {
+        const wb = XLSX.utils.book_new();
+        if (currentViewMode === 'test') {
+          const data = [];
+          db.testDefinitions.forEach(test => {
+            const marks = db.marks.filter(m => m.testId === test.id);
+            const present = marks.filter(m => m.status !== 'Absent' && m.marksObtained != null);
+            data.push({ Test: test.testName, Subject: test.subject, MaxMarks: test.maxMarks, Total: marks.length, Present: present.length, PassPercent: present.length ? ((present.filter(m => getPercentage(m, test.maxMarks) >= 40).length / present.length) * 100).toFixed(1) : '0', Above80: present.filter(m => { const p = getPercentage(m, test.maxMarks); return p >= 80; }).length, '70-79': present.filter(m => { const p = getPercentage(m, test.maxMarks); return p >= 70 && p < 80; }).length, '60-69': present.filter(m => { const p = getPercentage(m, test.maxMarks); return p >= 60 && p < 70; }).length, '50-59': present.filter(m => { const p = getPercentage(m, test.maxMarks); return p >= 50 && p < 60; }).length, Below50: present.filter(m => { const p = getPercentage(m, test.maxMarks); return p < 50; }).length, Failed: present.filter(m => getPercentage(m, test.maxMarks) < 40).length });
+          });
+          const ws = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, "TestWise");
+        } else {
+          const data = [];
+          db.students.forEach(s => {
+            const row = { Student: s.name, RegNo: s.regNo };
+            db.subjects.forEach(sub => {
+              const tests = db.testDefinitions.filter(t => t.subject === sub.subjectName);
+              let total = 0, cnt = 0;
+              tests.forEach(t => {
+                const m = db.marks.find(k => k.testId === t.id && k.regNo === s.regNo);
+                const pct = getPercentage(m, t.maxMarks);
+                row[`${sub.subjectName}_${t.testName}`] = m?.marksObtained || (m?.status === 'Absent' ? 'ABS' : '-');
+                if (pct !== null) { total += pct; cnt++; }
+              });
+              row[`${sub.subjectName}_Avg`] = cnt ? (total / cnt).toFixed(1) + '%' : '-';
+            });
+            data.push(row);
+          });
+          const ws = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, "SubjectWise");
+        }
+        XLSX.writeFile(wb, `ViewMarks_${currentViewMode}_${new Date().toISOString().slice(0,10)}.xlsx`);
+      }
+
+      // ----- ENHANCED REPORT with LEAVE RECORDS -----
+      function renderIndividualReport() {
+        const reg = document.getElementById("individualStudentSelect").value;
+        const container = document.getElementById("individualReportContainer");
+        if (!reg) { container.innerHTML = "<p>Select a student to view full report.</p>"; return; }
+        const student = getStudent(reg);
+        if (!student) { container.innerHTML = "<p>Student not found.</p>"; return; }
+
+        // Gather related data
+        const studentMarks = db.marks.filter(m => m.regNo === reg);
+        const studentDiscipline = db.discipline.filter(d => d.regNo === reg);
+        const studentLeaves = db.leaves.filter(l => l.regNo === reg);
+        const studentMentor = db.mentorMeetings.filter(m => m.regNo === reg);
+
+        // Subject filter
+        const subjectFilter = document.getElementById("reportSubjectSelect").value;
+        const tests = db.testDefinitions.filter(t => subjectFilter ? t.subject === subjectFilter : true);
+
+        let html = `<div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div><h3 style="margin:0;">${student.name} (${student.regNo})</h3>
+          <p style="margin:4px 0 0; color:#4b5563;">${student.year} • Section ${student.section} • 📱 ${student.studentMobile || 'N/A'}</p></div>
+          <div><span class="badge">${studentLeaves.length} Leave(s)</span> <span class="badge">${studentDiscipline.length} Incident(s)</span></div>
+        </div>`;
+
+        // ---- LEAVE RECORDS SECTION (enhanced) ----
+        html += `<div class="report-card" style="margin-bottom:16px; border-left-color:#f59e0b;">
+          <h4>🏖️ Leave Records (${studentLeaves.length})</h4>`;
+        if (studentLeaves.length === 0) {
+          html += `<p style="color:#6b7280; font-style:italic;">No leave records found.</p>`;
+        } else {
+          html += `<div class="leave-list">`;
+          studentLeaves.forEach(l => {
+            const days = calcDays(l.fromDate, l.toDate);
+            html += `<div class="leave-item">
+              <span><strong>${l.fromDate} → ${l.toDate}</strong> (${days} day${days>1?'s':''})</span>
+              <span>${getDayName(l.fromDate)}${days>1 ? ' to '+getDayName(l.toDate) : ''}</span>
+              <span style="color:#4b5563;">${l.reason || 'No reason'}</span>
+              <span style="font-size:0.7rem; background:#e5e7eb; padding:2px 8px; border-radius:30px;">${l.spokenBy || '—'}</span>
+            </div>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+
+        // ---- MARKS SUMMARY ----
+        html += `<div class="report-grid" style="grid-template-columns:1fr 1fr;">`;
+        html += `<div class="report-card"><h4>📝 Test Marks</h4>`;
+        if (tests.length === 0) { html += `<p>No tests match filter.</p>`; } else {
+          tests.forEach(t => {
+            const mark = db.marks.find(m => m.testId === t.id && m.regNo === reg);
+            const pct = getPercentage(mark, t.maxMarks);
+            let statusText = mark?.status || 'Not taken';
+            let color = '#6b7280';
+            if (mark?.status === 'Absent') { statusText = '❌ Absent'; color = '#dc2626'; } else if (pct !== null) { statusText = `${mark.marksObtained}/${t.maxMarks} (${pct.toFixed(1)}%)`; color = pct >= 40 ? '#059669' : '#dc2626'; }
+            html += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #e2e8f0; padding:4px 0;"><span>${t.testName}</span><span style="color:${color};">${statusText}</span></div>`;
+          });
+        }
+        html += `</div>`;
+
+        // ---- DISCIPLINE & MENTOR ----
+        html += `<div class="report-card"><h4>⚖️ Discipline & Mentor</h4>`;
+        if (studentDiscipline.length === 0 && studentMentor.length === 0) {
+          html += `<p style="color:#6b7280; font-style:italic;">No records.</p>`;
+        } else {
+          studentDiscipline.slice(0, 3).forEach(d => {
+            html += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #e2e8f0; padding:4px 0;"><span>${d.date} • ${d.type}</span><span style="font-size:0.75rem;">${d.incidentDetails || ''}</span></div>`;
+          });
+          if (studentDiscipline.length > 3) html += `<div style="color:#6b7280; font-size:0.8rem;">+ ${studentDiscipline.length-3} more</div>`;
+          studentMentor.slice(0, 2).forEach(m => {
+            html += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #e2e8f0; padding:4px 0;"><span>${m.date} • ${m.teacher}</span><span style="font-size:0.75rem;">${m.mom?.substring(0,20)||''}</span></div>`;
+          });
+        }
+        html += `</div></div>`;
+
+        // ---- FULL LEAVE TABLE (optional detail) ----
+        if (studentLeaves.length > 0) {
+          html += `<div style="margin-top:12px; background:white; border-radius:16px; padding:12px; border:1px solid #e2e8f0;">
+            <h4 style="margin:0 0 8px;">📋 All Leave Details</h4>
+            <table style="width:100%; font-size:0.8rem;">
+              <thead><tr><th>From</th><th>To</th><th>Days</th><th>Day(s)</th><th>Reason</th><th>Spoken By</th></tr></thead>
+              <tbody>`;
+          studentLeaves.forEach(l => {
+            const days = calcDays(l.fromDate, l.toDate);
+            html += `<tr><td>${l.fromDate}</td><td>${l.toDate}</td><td>${days}</td><td>${getDayName(l.fromDate)}${days>1?' → '+getDayName(l.toDate):''}</td><td>${l.reason||'-'}</td><td>${l.spokenBy||'-'}</td></tr>`;
+          });
+          html += `</tbody></table></div>`;
+        }
+
+        container.innerHTML = html;
+      }
+
+      // ----- SETUP EVENTS -----
+      function setupEvents() {
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+          btn.addEventListener("click", function() {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+            const tab = this.dataset.tab;
+            document.querySelectorAll(".tab-panel").forEach(p => p.style.display = "none");
+            document.getElementById(tab + "Panel").style.display = "block";
+            if (tab === "marks") renderMarkSelector();
+            if (tab === "viewmarks") renderViewMarks();
+            if (tab === "reports") renderIndividualReport();
+          });
+        });
+
+        document.getElementById("saveToFileBtn").onclick = () => downloadJson();
+        document.getElementById("addStudentBtn").onclick = () => { document.getElementById("studentForm").style.display = "flex"; document.getElementById("saveStudentBtn").onclick = () => { let reg = document.getElementById("regNo").value.trim(); if (!reg || db.students.find(s => s.regNo === reg)) return alert("Invalid Reg"); db.students.push({ regNo: reg, name: document.getElementById("studentName").value.trim(), year: document.getElementById("year").value.trim(), section: document.getElementById("section").value.trim(), parentMobile: document.getElementById("parentMobile").value.trim(), studentMobile: document.getElementById("studentMobile").value.trim(), photoUrl: document.getElementById("photoUrl").value.trim() }); saveToStorage(); renderAll(); document.getElementById("studentForm").style.display = "none"; }; };
+        document.getElementById("cancelStudentBtn").onclick = () => document.getElementById("studentForm").style.display = "none";
+        document.getElementById("addSubjectBtn").onclick = () => { document.getElementById("subjectForm").style.display = "flex"; document.getElementById("saveSubjectBtn").onclick = () => { db.subjects.push({ id: "sub" + Date.now(), subjectName: document.getElementById("subjectName").value.trim(), teacherName: document.getElementById("teacherName").value.trim(), signature: document.getElementById("teacherSignature").value.trim() }); saveToStorage(); renderAll(); document.getElementById("subjectForm").style.display = "none"; }; };
+        document.getElementById("cancelSubjectBtn").onclick = () => document.getElementById("subjectForm").style.display = "none";
+        document.getElementById("addTestDefBtn").onclick = () => { document.getElementById("testDefForm").style.display = "flex"; document.getElementById("saveTestDefBtn").onclick = () => { db.testDefinitions.push({ id: "t" + Date.now(), testName: document.getElementById("testName").value.trim(), subject: document.getElementById("testSubjectSelect").value, maxMarks: parseInt(document.getElementById("maxMarks").value), topics: document.getElementById("topicsList").value.split(',').map(t => t.trim()).filter(t => t) }); saveToStorage(); renderAll(); document.getElementById("testDefForm").style.display = "none"; }; };
+        document.getElementById("cancelTestDefBtn").onclick = () => document.getElementById("testDefForm").style.display = "none";
+        document.getElementById("bulkSaveMarksBtn").onclick = bulkSaveMarks;
+        document.getElementById("downloadMarksExcelBtn").onclick = () => { const id = document.getElementById("markTestSelect").value; if (!id) return; const t = db.testDefinitions.find(x => x.id === id); const data = db.students.map(s => { const m = db.marks.find(k => k.testId === id && k.regNo === s.regNo); return { RegNo: s.regNo, Name: s.name, Status: m?.status, Marks: m?.marksObtained }; }); const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Marks"); XLSX.writeFile(wb, `${t.testName}_marks.xlsx`); };
+        document.getElementById("downloadMarksPdfBtn").onclick = async () => { const id = document.getElementById("markTestSelect").value; if (!id) return; const t = db.testDefinitions.find(x => x.id === id); let h = `<h2>${t.testName} - ${t.subject}</h2><table border="1">`; db.students.forEach(s => { const m = db.marks.find(k => k.testId === id && k.regNo === s.regNo); h += `<tr><td>${s.regNo}</td><td>${s.name}</td><td>${m?.status||'?'}</td><td>${m?.marksObtained??'-'}</td></tr>`; }); h += '</table>'; const div = document.createElement('div'); div.innerHTML = h; document.body.appendChild(div); html2pdf().from(div).save().then(() => div.remove()); };
+        document.getElementById("addMentorBtn").onclick = () => { document.getElementById("mentorForm").style.display = "flex"; document.getElementById("saveMentorBtn").onclick = () => { db.mentorMeetings.push({ regNo: document.getElementById("mentorRegNo").value.trim(), date: document.getElementById("mentorDate").value, teacher: document.getElementById("mentorTeacher").value, mom: document.getElementById("mentorMom").value, actionPoints: document.getElementById("mentorAction").value }); saveToStorage(); renderAll(); document.getElementById("mentorForm").style.display = "none"; }; };
+        document.getElementById("cancelMentorBtn").onclick = () => document.getElementById("mentorForm").style.display = "none";
+        document.getElementById("addDiscBtn").onclick = () => { document.getElementById("discForm").style.display = "flex"; document.getElementById("saveDiscBtn").onclick = () => { db.discipline.push({ regNo: document.getElementById("discRegNo").value.trim(), date: document.getElementById("discDate").value, type: document.getElementById("discType").value, incidentDetails: document.getElementById("incidentDetails").value, actionTaken: document.getElementById("actionTaken").value }); saveToStorage(); renderAll(); document.getElementById("discForm").style.display = "none"; }; };
+        document.getElementById("cancelDiscBtn").onclick = () => document.getElementById("discForm").style.display = "none";
+        document.getElementById("addLeaveBtn").onclick = () => { document.getElementById("leaveForm").style.display = "flex"; document.getElementById("saveLeaveBtn").onclick = () => { db.leaves.push({ regNo: document.getElementById("leaveRegNo").value.trim(), fromDate: document.getElementById("leaveFrom").value, toDate: document.getElementById("leaveTo").value, reason: document.getElementById("leaveReason").value, spokenBy: document.getElementById("leaveSpokenBy").value }); saveToStorage(); renderAll(); document.getElementById("leaveForm").style.display = "none"; }; };
+        document.getElementById("cancelLeaveBtn").onclick = () => document.getElementById("leaveForm").style.display = "none";
+        document.getElementById("clearAllStudentsBtn").onclick = () => { if (confirm("Delete all?")) { db.students = []; db.marks = []; db.discipline = []; db.leaves = []; db.mentorMeetings = []; saveToStorage(); renderAll(); } };
+        document.getElementById("exportAllDataBtn").onclick = () => downloadJson();
+        document.getElementById("importBackupBtn").onclick = () => document.getElementById("importBackupInput").click();
+        document.getElementById("importBackupInput").onchange = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = ev => { try { const ndb = JSON.parse(ev.target.result); if (ndb.students) db = ndb; saveToStorage(); renderAll(); } catch { alert("Invalid file"); } }; r.readAsText(f); } };
+        document.getElementById("excelUploadBtn").onclick = () => document.getElementById("excelUploadZone").style.display = "block";
+        document.getElementById("excelUploadZone").onclick = () => document.getElementById("excelFileInput").click();
+        document.getElementById("excelFileInput").onchange = (e) => { if (e.target.files[0]) handleExcel(e.target.files[0]); };
+        document.getElementById("downloadExcelTemplate").onclick = () => { const ws = XLSX.utils.json_to_sheet([{ RegNo: "REG1001", Name: "John", Year: "1st", Section: "A", ParentMobile: "+91", StudentMobile: "+91", PhotoURL: "" }]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Students"); XLSX.writeFile(wb, "template.xlsx"); };
+        document.getElementById("leaveFrom").onchange = function() { if (this.value && document.getElementById("leaveTo").value) document.getElementById("leaveDay").value = getDayName(this.value); };
+        document.getElementById("viewByTestBtn").onclick = () => { currentViewMode = 'test'; document.getElementById("viewByTestBtn").classList.add("active"); document.getElementById("viewBySubjectBtn").classList.remove("active"); renderViewMarks(); };
+        document.getElementById("viewBySubjectBtn").onclick = () => { currentViewMode = 'subject'; document.getElementById("viewBySubjectBtn").classList.add("active"); document.getElementById("viewByTestBtn").classList.remove("active"); renderViewMarks(); };
+        document.getElementById("downloadViewMarksExcel").onclick = downloadViewMarksExcel;
+        document.getElementById("printIndividualReportBtn").onclick = () => { const reg = document.getElementById("individualStudentSelect").value; if (reg) { const win = window.open(); win.document.write(document.getElementById("individualReportContainer").innerHTML); win.print(); } };
+        document.getElementById("downloadPeriodReportBtn").onclick = () => { alert("Period report feature: exports current view as CSV/Excel. (Implement as needed)"); };
+        document.getElementById("refreshReportsBtn").onclick = () => renderIndividualReport();
+        document.getElementById("individualStudentSelect").onchange = () => renderIndividualReport();
+        document.getElementById("reportSubjectSelect").onchange = () => renderIndividualReport();
+      }
+
+      function downloadJson() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)])); a.download = `backup_${Date.now()}.json`; a.click(); }
+
+      function handleExcel(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => { const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' }); const sheet = wb.Sheets[wb.SheetNames[0]]; const rows = XLSX.utils.sheet_to_json(sheet); rows.forEach(r => { const reg = String(r['Reg No'] || r.RegNo || '').trim(); if (reg) { const idx = db.students.findIndex(s => s.regNo === reg); const obj = { regNo: reg, name: r.Name || '', year: r.Year || '', section: r.Section || '', parentMobile: r.ParentMobile || '', studentMobile: r.StudentMobile || '', photoUrl: r.PhotoURL || '' }; if (idx >= 0) db.students[idx] = obj; else db.students.push(obj); } }); saveToStorage(); renderAll(); };
+        reader.readAsArrayBuffer(file);
+      }
+
+      loadFromStorage();
+      setupEvents();
+      document.getElementById("studentsPanel").style.display = "block";
+    })();
+  </script>
+</body>
+</html>
