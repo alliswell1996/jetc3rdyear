@@ -312,6 +312,40 @@
       background: #fef3c7;
       color: #d97706;
     }
+    .github-config-box {
+      background: #f6f8fa;
+      border: 2px dashed #24292e;
+      border-radius: 28px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+    .github-config-box .config-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .github-config-box .config-row .input-group {
+      flex: 1;
+      min-width: 180px;
+    }
+    .github-config-box .config-row .input-group label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #24292e;
+    }
+    .github-config-box .config-row .input-group input {
+      background: white;
+    }
+    .github-config-box .config-hint {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #586069;
+    }
+    .github-config-box .config-hint a {
+      color: #0366d6;
+      text-decoration: none;
+    }
     @media (max-width: 700px) {
       .card {
         padding: 16px;
@@ -322,11 +356,15 @@
       .report-grid {
         grid-template-columns: 1fr;
       }
+      .github-config-box .config-row {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app-container">
+    <!-- Header -->
     <div class="header">
       <div>
         <h1>📚 Johnson Electric Training Centre</h1>
@@ -334,46 +372,52 @@
       </div>
       <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
         <div class="stats-badge" id="studentCountDisplay">👥 Students: 0</div>
-        <span id="githubStatus" class="github-status">⚡ Local</span>
-        <button id="syncFromGithubBtn" class="btn-github">⬇️ Pull from GitHub</button>
-        <button id="syncToGithubBtn" class="btn-github-success">⬆️ Push to GitHub</button>
-        <button id="exportJSONBtn" class="btn-excel">📤 Export JSON</button>
-        <button id="importJSONBtn" class="outline">📥 Import JSON</button>
-        <button id="clearAllStudentsBtn" class="btn-clear">🗑️ Remove All</button>
+        <span id="githubStatus" class="github-status">💻 Local</span>
+        <button id="syncFromGithubBtn" class="btn-github">⬇️ Pull</button>
+        <button id="syncToGithubBtn" class="btn-github-success">⬆️ Push</button>
+        <button id="exportJSONBtn" class="btn-excel">📤 Export</button>
+        <button id="importJSONBtn" class="outline">📥 Import</button>
+        <button id="clearAllStudentsBtn" class="btn-clear">🗑️ Clear</button>
       </div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="students">👩‍🎓 Students</button>
-      <button class="tab-btn" data-tab="subjects">📚 Subjects & Teachers</button>
-      <button class="tab-btn" data-tab="tests">📝 Tests & Topics</button>
-      <button class="tab-btn" data-tab="marks">✏️ Mark Entry</button>
-      <button class="tab-btn" data-tab="viewmarks">👁️ View Marks</button>
-      <button class="tab-btn" data-tab="mentor">🤝 Mentor Meetings</button>
-      <button class="tab-btn" data-tab="discipline">⚖️ Discipline</button>
-      <button class="tab-btn" data-tab="leave">🏖️ Leave Records</button>
-      <button class="tab-btn" data-tab="reports">📊 Reports</button>
     </div>
 
-    <!-- GitHub Config Panel -->
-    <div id="githubConfig" class="card" style="background:#f6f8fa; border:2px dashed #24292e;">
-      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-weight:600; font-size:0.8rem;">GitHub Token</label>
-          <input id="githubToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="background:white;">
+    <!-- GitHub Configuration -->
+    <div class="github-config-box">
+      <div class="config-row">
+        <div class="input-group">
+          <label>🔑 GitHub Token</label>
+          <input id="githubToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
         </div>
-        <div style="flex:1; min-width:200px;">
-          <label style="font-weight:600; font-size:0.8rem;">Repository (owner/repo)</label>
-          <input id="githubRepo" placeholder="username/repo-name" style="background:white;">
+        <div class="input-group">
+          <label>📁 Repository (owner/repo)</label>
+          <input id="githubRepo" placeholder="username/repo-name">
         </div>
-        <div style="flex:1; min-width:150px;">
-          <label style="font-weight:600; font-size:0.8rem;">File Path</label>
-          <input id="githubFilePath" value="data/classroom_data.json" style="background:white;">
+        <div class="input-group">
+          <label>📂 File Path</label>
+          <input id="githubFilePath" value="data/classroom_data.json">
         </div>
-        <button id="saveGithubConfigBtn" class="btn-github">💾 Save Config</button>
+        <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:10px;">
+          <button id="saveGithubConfigBtn" class="btn-github">💾 Save Config</button>
+          <button id="testGithubConnectionBtn" class="outline" style="border-color:#24292e; color:#24292e;">🔌 Test</button>
+        </div>
       </div>
-      <div style="margin-top:8px; font-size:0.8rem; color:#586069;">
-        🔑 Get token: Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token
+      <div class="config-hint">
+        💡 <strong>How to get your token:</strong> GitHub Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token (select <strong>repo</strong> scope) → Copy token.
+        <a href="https://github.com/settings/tokens" target="_blank">Go to GitHub Tokens</a>
       </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="students">👩‍🎓 Students</button>
+      <button class="tab-btn" data-tab="subjects">📚 Subjects</button>
+      <button class="tab-btn" data-tab="tests">📝 Tests</button>
+      <button class="tab-btn" data-tab="marks">✏️ Marks</button>
+      <button class="tab-btn" data-tab="viewmarks">👁️ View Marks</button>
+      <button class="tab-btn" data-tab="mentor">🤝 Mentor</button>
+      <button class="tab-btn" data-tab="discipline">⚖️ Discipline</button>
+      <button class="tab-btn" data-tab="leave">🏖️ Leave</button>
+      <button class="tab-btn" data-tab="reports">📊 Reports</button>
     </div>
 
     <!-- Students Panel -->
@@ -509,14 +553,9 @@
   <script>
     (function() {
       // ============================================
-      // DATABASE & STORAGE
+      // DATABASE
       // ============================================
       let db = { students: [], testDefinitions: [], marks: [], mentorMeetings: [], discipline: [], leaves: [], subjects: [] };
-
-      function saveToStorage() { 
-        localStorage.setItem("johnson_classroom_db_v5", JSON.stringify(db)); 
-        updateGitHubStatus('local');
-      }
 
       function getStudent(regNo) { return db.students.find(s => s.regNo === regNo); }
 
@@ -524,8 +563,13 @@
 
       function calcDays(f, t) { const s = new Date(f), e = new Date(t); if (isNaN(s) || isNaN(e)) return 0; return Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1; }
 
+      function saveToStorage() { 
+        localStorage.setItem("johnson_classroom_db_v5", JSON.stringify(db)); 
+        updateGitHubStatus('local');
+      }
+
       // ============================================
-      // GITHUB INTEGRATION
+      // GITHUB CONFIG
       // ============================================
       let githubConfig = {
         token: '',
@@ -574,6 +618,37 @@
         }
       }
 
+      // ============================================
+      // GITHUB API FUNCTIONS
+      // ============================================
+      async function testGithubConnection() {
+        if (!githubConfig.token || !githubConfig.repo) {
+          alert('❌ Please configure GitHub settings first!');
+          return;
+        }
+        updateGitHubStatus('syncing');
+        try {
+          const url = `https://api.github.com/repos/${githubConfig.repo}`;
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `token ${githubConfig.token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          if (response.ok) {
+            alert('✅ GitHub connection successful!');
+            updateGitHubStatus('success');
+          } else {
+            const error = await response.json();
+            alert(`❌ Connection failed: ${error.message}`);
+            updateGitHubStatus('error');
+          }
+        } catch (error) {
+          alert(`❌ Connection failed: ${error.message}`);
+          updateGitHubStatus('error');
+        }
+      }
+
       async function pushToGitHub() {
         if (!githubConfig.token || !githubConfig.repo) {
           alert('❌ Please configure GitHub settings first!');
@@ -586,7 +661,6 @@
           const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
           const url = `https://api.github.com/repos/${githubConfig.repo}/contents/${githubConfig.filePath}`;
           
-          // First, try to get the current file to get its SHA
           let sha = null;
           try {
             const getResponse = await fetch(url, {
@@ -601,7 +675,6 @@
             }
           } catch(e) {}
 
-          // Now push the new content
           const response = await fetch(url, {
             method: 'PUT',
             headers: {
@@ -667,7 +740,7 @@
       }
 
       // ============================================
-      // JSON FILE EXPORT/IMPORT
+      // JSON FILE IMPORT/EXPORT
       // ============================================
       function exportJSON() {
         const dataStr = JSON.stringify(db, null, 2);
@@ -724,7 +797,7 @@
       }
 
       // ============================================
-      // RENDER FUNCTIONS (same as before)
+      // RENDER FUNCTIONS
       // ============================================
       function renderAll() { renderStudents(); renderSubjects(); renderTests(); renderMarkSelector(); renderMentor(); renderDiscipline(); renderLeaves(); updateCount(); populateSelects(); renderViewMarks(); updateDatalist(); }
 
@@ -827,6 +900,7 @@
         });
       }
 
+      // Event delegation for inline edits
       document.addEventListener('click', function(e) {
         const target = e.target;
         const action = target.dataset.action;
@@ -954,7 +1028,9 @@
         if (sel) sel.innerHTML = '<option value="">-- Select Student --</option>' + db.students.map(s => `<option value="${s.regNo}">${s.regNo} - ${s.name}</option>`).join('');
       }
 
-      // View Marks
+      // ============================================
+      // VIEW MARKS
+      // ============================================
       let currentViewMode = 'test';
       function renderViewMarks() {
         const container = document.getElementById("viewMarksContainer");
@@ -1063,7 +1139,9 @@
         XLSX.writeFile(wb, `ViewMarks_${currentViewMode}_${new Date().toISOString().slice(0,10)}.xlsx`);
       }
 
-      // Reports
+      // ============================================
+      // REPORTS
+      // ============================================
       function renderIndividualReport() {
         const reg = document.getElementById("individualStudentSelect").value;
         const container = document.getElementById("individualReportContainer");
@@ -1071,9 +1149,8 @@
         const student = getStudent(reg);
         if (!student) { container.innerHTML = "<p>Student not found.</p>"; return; }
 
-        const studentMarks = db.marks.filter(m => m.regNo === reg);
-        const studentDiscipline = db.discipline.filter(d => d.regNo === reg);
         const studentLeaves = db.leaves.filter(l => l.regNo === reg);
+        const studentDiscipline = db.discipline.filter(d => d.regNo === reg);
         const studentMentor = db.mentorMeetings.filter(m => m.regNo === reg);
 
         const subjectFilter = document.getElementById("reportSubjectSelect").value;
@@ -1168,6 +1245,7 @@
 
         // GitHub buttons
         document.getElementById('saveGithubConfigBtn').onclick = saveGithubConfig;
+        document.getElementById('testGithubConnectionBtn').onclick = testGithubConnection;
         document.getElementById('syncToGithubBtn').onclick = pushToGitHub;
         document.getElementById('syncFromGithubBtn').onclick = pullFromGitHub;
 
@@ -1183,8 +1261,7 @@
           input.click();
         };
 
-        // Other buttons (same as before)
-        document.getElementById("saveToFileBtn")?.onclick = () => exportJSON();
+        // All other buttons
         document.getElementById("addStudentBtn").onclick = () => { document.getElementById("studentForm").style.display = "flex"; document.getElementById("saveStudentBtn").onclick = () => { let reg = document.getElementById("regNo").value.trim(); if (!reg || db.students.find(s => s.regNo === reg)) return alert("Invalid Reg"); db.students.push({ regNo: reg, name: document.getElementById("studentName").value.trim(), year: document.getElementById("year").value.trim(), section: document.getElementById("section").value.trim(), parentMobile: document.getElementById("parentMobile").value.trim(), studentMobile: document.getElementById("studentMobile").value.trim(), photoUrl: document.getElementById("photoUrl").value.trim() }); saveToStorage(); renderAll(); document.getElementById("studentForm").style.display = "none"; }; };
         document.getElementById("cancelStudentBtn").onclick = () => document.getElementById("studentForm").style.display = "none";
         document.getElementById("addSubjectBtn").onclick = () => { document.getElementById("subjectForm").style.display = "flex"; document.getElementById("saveSubjectBtn").onclick = () => { db.subjects.push({ id: "sub" + Date.now(), subjectName: document.getElementById("subjectName").value.trim(), teacherName: document.getElementById("teacherName").value.trim(), signature: document.getElementById("teacherSignature").value.trim() }); saveToStorage(); renderAll(); document.getElementById("subjectForm").style.display = "none"; }; };
@@ -1210,7 +1287,7 @@
         document.getElementById("viewBySubjectBtn").onclick = () => { currentViewMode = 'subject'; document.getElementById("viewBySubjectBtn").classList.add("active"); document.getElementById("viewByTestBtn").classList.remove("active"); renderViewMarks(); };
         document.getElementById("downloadViewMarksExcel").onclick = downloadViewMarksExcel;
         document.getElementById("printIndividualReportBtn").onclick = () => { const reg = document.getElementById("individualStudentSelect").value; if (reg) { const win = window.open(); win.document.write(document.getElementById("individualReportContainer").innerHTML); win.print(); } };
-        document.getElementById("downloadPeriodReportBtn").onclick = () => { alert("Period report feature: exports current view as CSV/Excel. (Implement as needed)"); };
+        document.getElementById("downloadPeriodReportBtn").onclick = () => { alert("Period report feature: exports current view as CSV/Excel."); };
         document.getElementById("refreshReportsBtn").onclick = () => renderIndividualReport();
         document.getElementById("individualStudentSelect").onchange = () => renderIndividualReport();
         document.getElementById("reportSubjectSelect").onchange = () => renderIndividualReport();
@@ -1230,13 +1307,12 @@
       setupEvents();
       document.getElementById("studentsPanel").style.display = "block";
 
-      // Try to pull from GitHub on load if configured
+      // Auto-pull from GitHub if configured
       if (githubConfig.token && githubConfig.repo) {
         setTimeout(() => {
           pullFromGitHub();
-        }, 1000);
+        }, 1500);
       }
-
     })();
   </script>
 </body>
