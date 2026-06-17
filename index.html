@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5">
-  <title>Johnson Electric Training Centre • Complete System</title>
+  <title>Johnson Electric Training Centre • GitHub Edition</title>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
@@ -63,6 +63,24 @@
     }
     .btn-excel {
       background: #1e7e34;
+    }
+    .btn-github {
+      background: #24292e;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      color: white;
+    }
+    .btn-github-success {
+      background: #28a745;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      color: white;
     }
     .tabs {
       display: flex;
@@ -212,19 +230,6 @@
       object-fit: cover;
       background: #e2e8f0;
     }
-    .absent-badge {
-      background: #fee2e2;
-      color: #dc2626;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-weight: bold;
-    }
-    .present-badge {
-      background: #d1fae5;
-      color: #059669;
-      padding: 4px 8px;
-      border-radius: 20px;
-    }
     .action-buttons {
       display: flex;
       gap: 5px;
@@ -289,6 +294,24 @@
       border-radius: 30px;
       font-size: 0.7rem;
     }
+    .github-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .github-status.success {
+      background: #d1fae5;
+      color: #059669;
+    }
+    .github-status.error {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .github-status.syncing {
+      background: #fef3c7;
+      color: #d97706;
+    }
     @media (max-width: 700px) {
       .card {
         padding: 16px;
@@ -307,15 +330,16 @@
     <div class="header">
       <div>
         <h1>📚 Johnson Electric Training Centre</h1>
-        <div class="college-sub">Complete Classroom Management System</div>
+        <div class="college-sub">GitHub Cloud Sync • Complete Classroom Management</div>
       </div>
       <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
         <div class="stats-badge" id="studentCountDisplay">👥 Students: 0</div>
+        <span id="githubStatus" class="github-status">⚡ Local</span>
+        <button id="syncFromGithubBtn" class="btn-github">⬇️ Pull from GitHub</button>
+        <button id="syncToGithubBtn" class="btn-github-success">⬆️ Push to GitHub</button>
+        <button id="exportJSONBtn" class="btn-excel">📤 Export JSON</button>
+        <button id="importJSONBtn" class="outline">📥 Import JSON</button>
         <button id="clearAllStudentsBtn" class="btn-clear">🗑️ Remove All</button>
-        <button id="exportAllDataBtn" class="btn-excel">💾 Export Backup</button>
-        <input type="file" id="importBackupInput" accept=".json" style="display:none;">
-        <button id="importBackupBtn" class="outline">📂 Restore</button>
-        <button id="saveToFileBtn" class="success">💿 Save to JSON File</button>
       </div>
     </div>
     <div class="tabs">
@@ -328,6 +352,28 @@
       <button class="tab-btn" data-tab="discipline">⚖️ Discipline</button>
       <button class="tab-btn" data-tab="leave">🏖️ Leave Records</button>
       <button class="tab-btn" data-tab="reports">📊 Reports</button>
+    </div>
+
+    <!-- GitHub Config Panel -->
+    <div id="githubConfig" class="card" style="background:#f6f8fa; border:2px dashed #24292e;">
+      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-weight:600; font-size:0.8rem;">GitHub Token</label>
+          <input id="githubToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="background:white;">
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label style="font-weight:600; font-size:0.8rem;">Repository (owner/repo)</label>
+          <input id="githubRepo" placeholder="username/repo-name" style="background:white;">
+        </div>
+        <div style="flex:1; min-width:150px;">
+          <label style="font-weight:600; font-size:0.8rem;">File Path</label>
+          <input id="githubFilePath" value="data/classroom_data.json" style="background:white;">
+        </div>
+        <button id="saveGithubConfigBtn" class="btn-github">💾 Save Config</button>
+      </div>
+      <div style="margin-top:8px; font-size:0.8rem; color:#586069;">
+        🔑 Get token: Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token
+      </div>
     </div>
 
     <!-- Students Panel -->
@@ -384,7 +430,7 @@
       </div>
     </div>
 
-    <!-- VIEW MARKS PANEL -->
+    <!-- View Marks Panel -->
     <div id="viewmarksPanel" class="tab-panel" style="display:none;">
       <div class="card"><div class="card-header"><h2>👁️ View Marks & Analytics</h2><button id="downloadViewMarksExcel" class="btn-excel">📥 Export View</button></div>
         <div class="view-toggle"><button id="viewByTestBtn" class="active" style="background:#1e4663; color:white;">📝 Test-wise Analysis</button><button id="viewBySubjectBtn" class="outline">📚 Subject-wise Summary</button></div>
@@ -438,7 +484,7 @@
       </div>
     </div>
 
-    <!-- REPORTS PANEL - enhanced with leave records -->
+    <!-- Reports Panel -->
     <div id="reportsPanel" class="tab-panel" style="display:none;">
       <div class="card">
         <div class="card-header"><h2>📊 Comprehensive Student Report</h2>
@@ -462,9 +508,15 @@
 
   <script>
     (function() {
+      // ============================================
+      // DATABASE & STORAGE
+      // ============================================
       let db = { students: [], testDefinitions: [], marks: [], mentorMeetings: [], discipline: [], leaves: [], subjects: [] };
 
-      function saveToStorage() { localStorage.setItem("johnson_classroom_db_v5", JSON.stringify(db)); }
+      function saveToStorage() { 
+        localStorage.setItem("johnson_classroom_db_v5", JSON.stringify(db)); 
+        updateGitHubStatus('local');
+      }
 
       function getStudent(regNo) { return db.students.find(s => s.regNo === regNo); }
 
@@ -472,6 +524,181 @@
 
       function calcDays(f, t) { const s = new Date(f), e = new Date(t); if (isNaN(s) || isNaN(e)) return 0; return Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1; }
 
+      // ============================================
+      // GITHUB INTEGRATION
+      // ============================================
+      let githubConfig = {
+        token: '',
+        repo: '',
+        filePath: 'data/classroom_data.json'
+      };
+
+      function loadGithubConfig() {
+        const saved = localStorage.getItem('github_config');
+        if (saved) {
+          try {
+            githubConfig = JSON.parse(saved);
+            document.getElementById('githubToken').value = githubConfig.token || '';
+            document.getElementById('githubRepo').value = githubConfig.repo || '';
+            document.getElementById('githubFilePath').value = githubConfig.filePath || 'data/classroom_data.json';
+          } catch(e) {}
+        }
+      }
+
+      function saveGithubConfig() {
+        githubConfig.token = document.getElementById('githubToken').value.trim();
+        githubConfig.repo = document.getElementById('githubRepo').value.trim();
+        githubConfig.filePath = document.getElementById('githubFilePath').value.trim() || 'data/classroom_data.json';
+        localStorage.setItem('github_config', JSON.stringify(githubConfig));
+        updateGitHubStatus('config_saved');
+        alert('✅ GitHub configuration saved!');
+      }
+
+      function updateGitHubStatus(status) {
+        const el = document.getElementById('githubStatus');
+        if (status === 'syncing') {
+          el.textContent = '🔄 Syncing...';
+          el.className = 'github-status syncing';
+        } else if (status === 'success') {
+          el.textContent = '✅ Cloud';
+          el.className = 'github-status success';
+        } else if (status === 'error') {
+          el.textContent = '❌ Error';
+          el.className = 'github-status error';
+        } else if (status === 'config_saved') {
+          el.textContent = '⚙️ Configured';
+          el.className = 'github-status success';
+        } else {
+          el.textContent = '💻 Local';
+          el.className = 'github-status';
+        }
+      }
+
+      async function pushToGitHub() {
+        if (!githubConfig.token || !githubConfig.repo) {
+          alert('❌ Please configure GitHub settings first!');
+          return;
+        }
+
+        updateGitHubStatus('syncing');
+        
+        try {
+          const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+          const url = `https://api.github.com/repos/${githubConfig.repo}/contents/${githubConfig.filePath}`;
+          
+          // First, try to get the current file to get its SHA
+          let sha = null;
+          try {
+            const getResponse = await fetch(url, {
+              headers: {
+                'Authorization': `token ${githubConfig.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            });
+            if (getResponse.ok) {
+              const data = await getResponse.json();
+              sha = data.sha;
+            }
+          } catch(e) {}
+
+          // Now push the new content
+          const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${githubConfig.token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: `Update classroom data - ${new Date().toLocaleString()}`,
+              content: content,
+              sha: sha
+            })
+          });
+
+          if (response.ok) {
+            updateGitHubStatus('success');
+            alert('✅ Data successfully pushed to GitHub!');
+          } else {
+            const error = await response.json();
+            throw new Error(error.message || 'Unknown error');
+          }
+        } catch (error) {
+          updateGitHubStatus('error');
+          alert(`❌ Failed to push to GitHub: ${error.message}`);
+        }
+      }
+
+      async function pullFromGitHub() {
+        if (!githubConfig.token || !githubConfig.repo) {
+          alert('❌ Please configure GitHub settings first!');
+          return;
+        }
+
+        updateGitHubStatus('syncing');
+        
+        try {
+          const url = `https://api.github.com/repos/${githubConfig.repo}/contents/${githubConfig.filePath}`;
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `token ${githubConfig.token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            db = { ...db, ...content };
+            saveToStorage();
+            renderAll();
+            updateGitHubStatus('success');
+            alert('✅ Data successfully pulled from GitHub!');
+          } else if (response.status === 404) {
+            alert('ℹ️ No data file found on GitHub. Push your data first!');
+            updateGitHubStatus('local');
+          } else {
+            const error = await response.json();
+            throw new Error(error.message || 'Unknown error');
+          }
+        } catch (error) {
+          updateGitHubStatus('error');
+          alert(`❌ Failed to pull from GitHub: ${error.message}`);
+        }
+      }
+
+      // ============================================
+      // JSON FILE EXPORT/IMPORT
+      // ============================================
+      function exportJSON() {
+        const dataStr = JSON.stringify(db, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `classroom_data_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function importJSON(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            db = { ...db, ...data };
+            saveToStorage();
+            renderAll();
+            alert('✅ Data imported successfully!');
+          } catch (error) {
+            alert('❌ Invalid JSON file');
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // ============================================
+      // LOAD DATA
+      // ============================================
       function loadFromStorage() {
         const saved = localStorage.getItem("johnson_classroom_db_v5");
         if (saved) { try { const p = JSON.parse(saved); db = { ...db, ...p }; } catch (e) {} }
@@ -491,11 +718,14 @@
           db.leaves.push({ regNo: "REG1002", fromDate: "2024-02-01", toDate: "2024-02-03", reason: "Medical", spokenBy: "Mother" });
           db.leaves.push({ regNo: "REG1005", fromDate: "2024-03-10", toDate: "2024-03-12", reason: "Family event", spokenBy: "Father" });
           db.leaves.push({ regNo: "REG1008", fromDate: "2024-04-05", toDate: "2024-04-07", reason: "Vacation", spokenBy: "Self" });
+          saveToStorage();
         }
-        saveToStorage();
         renderAll();
       }
 
+      // ============================================
+      // RENDER FUNCTIONS (same as before)
+      // ============================================
       function renderAll() { renderStudents(); renderSubjects(); renderTests(); renderMarkSelector(); renderMentor(); renderDiscipline(); renderLeaves(); updateCount(); populateSelects(); renderViewMarks(); updateDatalist(); }
 
       function renderStudents() {
@@ -724,7 +954,7 @@
         if (sel) sel.innerHTML = '<option value="">-- Select Student --</option>' + db.students.map(s => `<option value="${s.regNo}">${s.regNo} - ${s.name}</option>`).join('');
       }
 
-      // VIEW MARKS
+      // View Marks
       let currentViewMode = 'test';
       function renderViewMarks() {
         const container = document.getElementById("viewMarksContainer");
@@ -833,7 +1063,7 @@
         XLSX.writeFile(wb, `ViewMarks_${currentViewMode}_${new Date().toISOString().slice(0,10)}.xlsx`);
       }
 
-      // ----- ENHANCED REPORT with LEAVE RECORDS -----
+      // Reports
       function renderIndividualReport() {
         const reg = document.getElementById("individualStudentSelect").value;
         const container = document.getElementById("individualReportContainer");
@@ -841,13 +1071,11 @@
         const student = getStudent(reg);
         if (!student) { container.innerHTML = "<p>Student not found.</p>"; return; }
 
-        // Gather related data
         const studentMarks = db.marks.filter(m => m.regNo === reg);
         const studentDiscipline = db.discipline.filter(d => d.regNo === reg);
         const studentLeaves = db.leaves.filter(l => l.regNo === reg);
         const studentMentor = db.mentorMeetings.filter(m => m.regNo === reg);
 
-        // Subject filter
         const subjectFilter = document.getElementById("reportSubjectSelect").value;
         const tests = db.testDefinitions.filter(t => subjectFilter ? t.subject === subjectFilter : true);
 
@@ -857,7 +1085,6 @@
           <div><span class="badge">${studentLeaves.length} Leave(s)</span> <span class="badge">${studentDiscipline.length} Incident(s)</span></div>
         </div>`;
 
-        // ---- LEAVE RECORDS SECTION (enhanced) ----
         html += `<div class="report-card" style="margin-bottom:16px; border-left-color:#f59e0b;">
           <h4>🏖️ Leave Records (${studentLeaves.length})</h4>`;
         if (studentLeaves.length === 0) {
@@ -877,7 +1104,6 @@
         }
         html += `</div>`;
 
-        // ---- MARKS SUMMARY ----
         html += `<div class="report-grid" style="grid-template-columns:1fr 1fr;">`;
         html += `<div class="report-card"><h4>📝 Test Marks</h4>`;
         if (tests.length === 0) { html += `<p>No tests match filter.</p>`; } else {
@@ -892,7 +1118,6 @@
         }
         html += `</div>`;
 
-        // ---- DISCIPLINE & MENTOR ----
         html += `<div class="report-card"><h4>⚖️ Discipline & Mentor</h4>`;
         if (studentDiscipline.length === 0 && studentMentor.length === 0) {
           html += `<p style="color:#6b7280; font-style:italic;">No records.</p>`;
@@ -907,7 +1132,6 @@
         }
         html += `</div></div>`;
 
-        // ---- FULL LEAVE TABLE (optional detail) ----
         if (studentLeaves.length > 0) {
           html += `<div style="margin-top:12px; background:white; border-radius:16px; padding:12px; border:1px solid #e2e8f0;">
             <h4 style="margin:0 0 8px;">📋 All Leave Details</h4>
@@ -924,8 +1148,11 @@
         container.innerHTML = html;
       }
 
-      // ----- SETUP EVENTS -----
+      // ============================================
+      // SETUP EVENTS
+      // ============================================
       function setupEvents() {
+        // Tab switching
         document.querySelectorAll(".tab-btn").forEach(btn => {
           btn.addEventListener("click", function() {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -939,7 +1166,25 @@
           });
         });
 
-        document.getElementById("saveToFileBtn").onclick = () => downloadJson();
+        // GitHub buttons
+        document.getElementById('saveGithubConfigBtn').onclick = saveGithubConfig;
+        document.getElementById('syncToGithubBtn').onclick = pushToGitHub;
+        document.getElementById('syncFromGithubBtn').onclick = pullFromGitHub;
+
+        // JSON buttons
+        document.getElementById('exportJSONBtn').onclick = exportJSON;
+        document.getElementById('importJSONBtn').onclick = () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.json';
+          input.onchange = (e) => {
+            if (e.target.files[0]) importJSON(e.target.files[0]);
+          };
+          input.click();
+        };
+
+        // Other buttons (same as before)
+        document.getElementById("saveToFileBtn")?.onclick = () => exportJSON();
         document.getElementById("addStudentBtn").onclick = () => { document.getElementById("studentForm").style.display = "flex"; document.getElementById("saveStudentBtn").onclick = () => { let reg = document.getElementById("regNo").value.trim(); if (!reg || db.students.find(s => s.regNo === reg)) return alert("Invalid Reg"); db.students.push({ regNo: reg, name: document.getElementById("studentName").value.trim(), year: document.getElementById("year").value.trim(), section: document.getElementById("section").value.trim(), parentMobile: document.getElementById("parentMobile").value.trim(), studentMobile: document.getElementById("studentMobile").value.trim(), photoUrl: document.getElementById("photoUrl").value.trim() }); saveToStorage(); renderAll(); document.getElementById("studentForm").style.display = "none"; }; };
         document.getElementById("cancelStudentBtn").onclick = () => document.getElementById("studentForm").style.display = "none";
         document.getElementById("addSubjectBtn").onclick = () => { document.getElementById("subjectForm").style.display = "flex"; document.getElementById("saveSubjectBtn").onclick = () => { db.subjects.push({ id: "sub" + Date.now(), subjectName: document.getElementById("subjectName").value.trim(), teacherName: document.getElementById("teacherName").value.trim(), signature: document.getElementById("teacherSignature").value.trim() }); saveToStorage(); renderAll(); document.getElementById("subjectForm").style.display = "none"; }; };
@@ -955,10 +1200,7 @@
         document.getElementById("cancelDiscBtn").onclick = () => document.getElementById("discForm").style.display = "none";
         document.getElementById("addLeaveBtn").onclick = () => { document.getElementById("leaveForm").style.display = "flex"; document.getElementById("saveLeaveBtn").onclick = () => { db.leaves.push({ regNo: document.getElementById("leaveRegNo").value.trim(), fromDate: document.getElementById("leaveFrom").value, toDate: document.getElementById("leaveTo").value, reason: document.getElementById("leaveReason").value, spokenBy: document.getElementById("leaveSpokenBy").value }); saveToStorage(); renderAll(); document.getElementById("leaveForm").style.display = "none"; }; };
         document.getElementById("cancelLeaveBtn").onclick = () => document.getElementById("leaveForm").style.display = "none";
-        document.getElementById("clearAllStudentsBtn").onclick = () => { if (confirm("Delete all?")) { db.students = []; db.marks = []; db.discipline = []; db.leaves = []; db.mentorMeetings = []; saveToStorage(); renderAll(); } };
-        document.getElementById("exportAllDataBtn").onclick = () => downloadJson();
-        document.getElementById("importBackupBtn").onclick = () => document.getElementById("importBackupInput").click();
-        document.getElementById("importBackupInput").onchange = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = ev => { try { const ndb = JSON.parse(ev.target.result); if (ndb.students) db = ndb; saveToStorage(); renderAll(); } catch { alert("Invalid file"); } }; r.readAsText(f); } };
+        document.getElementById("clearAllStudentsBtn").onclick = () => { if (confirm("Delete all data?")) { db.students = []; db.marks = []; db.discipline = []; db.leaves = []; db.mentorMeetings = []; saveToStorage(); renderAll(); } };
         document.getElementById("excelUploadBtn").onclick = () => document.getElementById("excelUploadZone").style.display = "block";
         document.getElementById("excelUploadZone").onclick = () => document.getElementById("excelFileInput").click();
         document.getElementById("excelFileInput").onchange = (e) => { if (e.target.files[0]) handleExcel(e.target.files[0]); };
@@ -974,17 +1216,27 @@
         document.getElementById("reportSubjectSelect").onchange = () => renderIndividualReport();
       }
 
-      function downloadJson() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)])); a.download = `backup_${Date.now()}.json`; a.click(); }
-
       function handleExcel(file) {
         const reader = new FileReader();
         reader.onload = (e) => { const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' }); const sheet = wb.Sheets[wb.SheetNames[0]]; const rows = XLSX.utils.sheet_to_json(sheet); rows.forEach(r => { const reg = String(r['Reg No'] || r.RegNo || '').trim(); if (reg) { const idx = db.students.findIndex(s => s.regNo === reg); const obj = { regNo: reg, name: r.Name || '', year: r.Year || '', section: r.Section || '', parentMobile: r.ParentMobile || '', studentMobile: r.StudentMobile || '', photoUrl: r.PhotoURL || '' }; if (idx >= 0) db.students[idx] = obj; else db.students.push(obj); } }); saveToStorage(); renderAll(); };
         reader.readAsArrayBuffer(file);
       }
 
+      // ============================================
+      // INITIALIZE
+      // ============================================
+      loadGithubConfig();
       loadFromStorage();
       setupEvents();
       document.getElementById("studentsPanel").style.display = "block";
+
+      // Try to pull from GitHub on load if configured
+      if (githubConfig.token && githubConfig.repo) {
+        setTimeout(() => {
+          pullFromGitHub();
+        }, 1000);
+      }
+
     })();
   </script>
 </body>
